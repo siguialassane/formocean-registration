@@ -46,21 +46,39 @@ const SignupForm = () => {
     },
   });
 
-  const sendConfirmationEmail = async (data: FormData) => {
+  const sendUserConfirmationEmail = async (data: FormData) => {
     try {
       await emailjs.send(
-        'YOUR_SERVICE_ID', // Vous devrez remplacer ceci par votre Service ID
-        'YOUR_TEMPLATE_ID', // Vous devrez remplacer ceci par votre Template ID
+        'service_sxgma2j',
+        'template_dp1tu2w',
         {
           to_name: `${data.firstName} ${data.lastName}`,
           to_email: data.email,
           status: data.status,
-          // Vous pouvez ajouter d'autres variables selon votre template
         },
-        'YOUR_PUBLIC_KEY' // Vous devrez remplacer ceci par votre Public Key
+        'Ro8JahlKtBGVd_OI4'
       );
     } catch (error) {
-      console.error("Erreur lors de l'envoi de l'email:", error);
+      console.error("Erreur lors de l'envoi de l'email à l'utilisateur:", error);
+      throw error;
+    }
+  };
+
+  const sendOrganizerNotificationEmail = async (data: FormData) => {
+    try {
+      await emailjs.send(
+        'service_sxgma2j',
+        'template_2ncsaxe',
+        {
+          participant_name: `${data.firstName} ${data.lastName}`,
+          participant_email: data.email,
+          participant_phone: data.phone,
+          participant_status: data.status,
+        },
+        'Ro8JahlKtBGVd_OI4'
+      );
+    } catch (error) {
+      console.error("Erreur lors de l'envoi de l'email à l'organisateur:", error);
       throw error;
     }
   };
@@ -78,8 +96,11 @@ const SignupForm = () => {
 
       if (error) throw error;
 
-      // Envoi de l'email de confirmation
-      await sendConfirmationEmail(data);
+      // Envoi des emails de confirmation
+      await Promise.all([
+        sendUserConfirmationEmail(data),
+        sendOrganizerNotificationEmail(data)
+      ]);
 
       toast({
         title: "Inscription réussie!",
