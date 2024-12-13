@@ -5,11 +5,12 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 
-// Create a client
+// Create a client outside of the component to avoid recreation on each render
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       staleTime: 5 * 1000,
+      retry: 1,
     },
   },
 });
