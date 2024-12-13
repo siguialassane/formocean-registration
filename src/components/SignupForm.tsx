@@ -4,6 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { signupSchema } from "@/lib/validations";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import emailjs from '@emailjs/browser';
 import {
   Form,
   FormControl,
@@ -45,6 +46,25 @@ const SignupForm = () => {
     },
   });
 
+  const sendConfirmationEmail = async (data: FormData) => {
+    try {
+      await emailjs.send(
+        'YOUR_SERVICE_ID', // Vous devrez remplacer ceci par votre Service ID
+        'YOUR_TEMPLATE_ID', // Vous devrez remplacer ceci par votre Template ID
+        {
+          to_name: `${data.firstName} ${data.lastName}`,
+          to_email: data.email,
+          status: data.status,
+          // Vous pouvez ajouter d'autres variables selon votre template
+        },
+        'YOUR_PUBLIC_KEY' // Vous devrez remplacer ceci par votre Public Key
+      );
+    } catch (error) {
+      console.error("Erreur lors de l'envoi de l'email:", error);
+      throw error;
+    }
+  };
+
   const onSubmit = async (data: FormData) => {
     setIsSubmitting(true);
     try {
@@ -58,9 +78,12 @@ const SignupForm = () => {
 
       if (error) throw error;
 
+      // Envoi de l'email de confirmation
+      await sendConfirmationEmail(data);
+
       toast({
         title: "Inscription réussie!",
-        description: "Vos informations ont été enregistrées avec succès.",
+        description: "Vos informations ont été enregistrées avec succès. Un email de confirmation vous a été envoyé.",
       });
       form.reset();
     } catch (error) {
