@@ -20,6 +20,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useToast } from "@/components/ui/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
 type FormData = {
   firstName: string;
@@ -31,6 +32,8 @@ type FormData = {
 
 const SignupForm = () => {
   const { toast } = useToast();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  
   const form = useForm<FormData>({
     resolver: zodResolver(signupSchema),
     defaultValues: {
@@ -43,20 +46,32 @@ const SignupForm = () => {
   });
 
   const onSubmit = async (data: FormData) => {
+    setIsSubmitting(true);
     try {
-      // Pour l'instant, on affiche juste les données
-      console.log(data);
+      const { error } = await supabase.from("contacts").insert({
+        nom: data.lastName,
+        prenom: data.firstName,
+        email: data.email,
+        tel: data.phone,
+        status: data.status.charAt(0).toUpperCase() + data.status.slice(1), // Capitalize first letter
+      });
+
+      if (error) throw error;
+
       toast({
-        title: "Formulaire soumis avec succès!",
-        description: "Nous traiterons votre inscription sous peu.",
+        title: "Inscription réussie!",
+        description: "Vos informations ont été enregistrées avec succès.",
       });
       form.reset();
     } catch (error) {
+      console.error("Erreur lors de l'inscription:", error);
       toast({
         variant: "destructive",
         title: "Erreur",
-        description: "Une erreur est survenue lors de l'inscription.",
+        description: "Une erreur est survenue lors de l'inscription. Veuillez réessayer.",
       });
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -143,8 +158,8 @@ const SignupForm = () => {
           )}
         />
 
-        <Button type="submit" className="w-full">
-          S'inscrire
+        <Button type="submit" className="w-full" disabled={isSubmitting}>
+          {isSubmitting ? "Inscription en cours..." : "S'inscrire"}
         </Button>
       </form>
     </Form>
