@@ -4,7 +4,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { signupSchema } from "@/lib/validations";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import emailjs from '@emailjs/browser';
 import {
   Form,
   FormControl,
@@ -22,6 +21,7 @@ import {
 } from "@/components/ui/select";
 import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { sendUserConfirmationEmail, sendOrganizerNotificationEmail } from "@/utils/emailService";
 
 type FormData = {
   firstName: string;
@@ -46,51 +46,6 @@ const SignupForm = () => {
     },
   });
 
-  const sendUserConfirmationEmail = async (data: FormData) => {
-    try {
-      const templateParams = {
-        to_name: `${data.firstName} ${data.lastName}`,
-        to_email: data.email, // This is crucial for EmailJS to work
-        user_email: data.email, // Backup in case template uses this variable
-        status: data.status,
-        message: `Merci de votre inscription en tant que ${data.status}`,
-      };
-
-      await emailjs.send(
-        'service_sxgma2j',
-        'template_dp1tu2w',
-        templateParams,
-        'Ro8JahlKtBGVd_OI4'
-      );
-    } catch (error) {
-      console.error("Erreur lors de l'envoi de l'email à l'utilisateur:", error);
-      throw error;
-    }
-  };
-
-  const sendOrganizerNotificationEmail = async (data: FormData) => {
-    try {
-      const templateParams = {
-        participant_name: `${data.firstName} ${data.lastName}`,
-        participant_email: data.email,
-        participant_phone: data.phone,
-        participant_status: data.status,
-        // Make sure your EmailJS template has a default recipient email set
-        // in the template settings, as we don't specify it here
-      };
-
-      await emailjs.send(
-        'service_sxgma2j',
-        'template_2ncsaxe',
-        templateParams,
-        'Ro8JahlKtBGVd_OI4'
-      );
-    } catch (error) {
-      console.error("Erreur lors de l'envoi de l'email à l'organisateur:", error);
-      throw error;
-    }
-  };
-
   const onSubmit = async (data: FormData) => {
     setIsSubmitting(true);
     try {
@@ -99,12 +54,12 @@ const SignupForm = () => {
         prenom: data.firstName,
         email: data.email,
         tel: data.phone,
-        status: data.status.charAt(0).toUpperCase() + data.status.slice(1), // Capitalize first letter
+        status: data.status.charAt(0).toUpperCase() + data.status.slice(1),
       });
 
       if (error) throw error;
 
-      // Envoi des emails de confirmation
+      // Send confirmation emails
       await Promise.all([
         sendUserConfirmationEmail(data),
         sendOrganizerNotificationEmail(data)
