@@ -4,9 +4,8 @@ const EMAIL_SERVICE_ID = 'service_sxgma2j';
 const USER_TEMPLATE_ID = 'template_dp1tu2w';
 const ORGANIZER_TEMPLATE_ID = 'template_2ncsaxe';
 const PUBLIC_KEY = 'Ro8JahlKtBGVd_OI4';
-const ORGANIZER_EMAIL = 'organisateur@example.com'; // Replace with actual organizer email
+const ORGANIZER_EMAIL = 'organisateur@example.com';
 
-// Initialize EmailJS
 emailjs.init(PUBLIC_KEY);
 
 type UserData = {
@@ -15,18 +14,22 @@ type UserData = {
   email: string;
   phone: string;
   status: string;
+  id?: string; // Add id to the type
 };
 
 export const sendUserConfirmationEmail = async (data: UserData) => {
   try {
+    const verificationUrl = `${window.location.origin}/verify-registration?id=${data.id}`;
+    
     const templateParams = {
-      from_name: "Admin", // Sender name
+      from_name: "Admin",
       to_email: data.email,
       email: data.email,
       nom: data.lastName,
       prenom: data.firstName,
       tel: data.phone,
       status: data.status,
+      verification_url: verificationUrl,
       reply_to: data.email,
     };
 
