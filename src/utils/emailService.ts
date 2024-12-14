@@ -14,12 +14,15 @@ type UserData = {
   email: string;
   phone: string;
   status: string;
-  id?: string; // Add id to the type
+  id?: string;
 };
 
 export const sendUserConfirmationEmail = async (data: UserData) => {
   try {
-    const verificationUrl = `${window.location.origin}/verify-registration?id=${data.id}`;
+    const verificationUrl = `${window.location.origin}/verify-info?id=${data.id}`;
+    
+    // Generate QR code URL using QR Server
+    const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(verificationUrl)}`;
     
     const templateParams = {
       from_name: "Admin",
@@ -30,6 +33,7 @@ export const sendUserConfirmationEmail = async (data: UserData) => {
       tel: data.phone,
       status: data.status,
       verification_url: verificationUrl,
+      qr_code_url: qrCodeUrl,
       reply_to: data.email,
     };
 
