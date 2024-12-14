@@ -49,19 +49,19 @@ const SignupForm = () => {
   const onSubmit = async (data: FormData) => {
     setIsSubmitting(true);
     try {
-      const { data: insertedData, error } = await supabase.from("contacts").insert({
+      const { error } = await supabase.from("contacts").insert({
         nom: data.lastName,
         prenom: data.firstName,
         email: data.email,
         tel: data.phone,
         status: data.status.charAt(0).toUpperCase() + data.status.slice(1),
-      }).select().single();
+      });
 
       if (error) throw error;
 
-      // Send confirmation emails with the registration ID
+      // Send confirmation emails
       await Promise.all([
-        sendUserConfirmationEmail({ ...data, id: insertedData.id }),
+        sendUserConfirmationEmail(data),
         sendOrganizerNotificationEmail(data)
       ]);
 
