@@ -48,14 +48,18 @@ const SignupForm = () => {
 
   const sendUserConfirmationEmail = async (data: FormData) => {
     try {
+      const templateParams = {
+        to_name: `${data.firstName} ${data.lastName}`,
+        to_email: data.email, // This is crucial for EmailJS to work
+        user_email: data.email, // Backup in case template uses this variable
+        status: data.status,
+        message: `Merci de votre inscription en tant que ${data.status}`,
+      };
+
       await emailjs.send(
         'service_sxgma2j',
         'template_dp1tu2w',
-        {
-          to_name: `${data.firstName} ${data.lastName}`,
-          to_email: data.email,
-          status: data.status,
-        },
+        templateParams,
         'Ro8JahlKtBGVd_OI4'
       );
     } catch (error) {
@@ -66,15 +70,19 @@ const SignupForm = () => {
 
   const sendOrganizerNotificationEmail = async (data: FormData) => {
     try {
+      const templateParams = {
+        participant_name: `${data.firstName} ${data.lastName}`,
+        participant_email: data.email,
+        participant_phone: data.phone,
+        participant_status: data.status,
+        // Make sure your EmailJS template has a default recipient email set
+        // in the template settings, as we don't specify it here
+      };
+
       await emailjs.send(
         'service_sxgma2j',
         'template_2ncsaxe',
-        {
-          participant_name: `${data.firstName} ${data.lastName}`,
-          participant_email: data.email,
-          participant_phone: data.phone,
-          participant_status: data.status,
-        },
+        templateParams,
         'Ro8JahlKtBGVd_OI4'
       );
     } catch (error) {
