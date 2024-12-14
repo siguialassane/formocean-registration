@@ -20,12 +20,14 @@ type UserData = {
 export const sendUserConfirmationEmail = async (data: UserData) => {
   try {
     const templateParams = {
-      to_name: `${data.firstName} ${data.lastName}`,
+      from_name: "Admin", // Sender name
       to_email: data.email,
-      user_email: data.email,
+      email: data.email,
+      nom: data.lastName,
+      prenom: data.firstName,
+      tel: data.phone,
       status: data.status,
-      message: `Merci de votre inscription en tant que ${data.status}`,
-      reply_to: data.email, // Ensure reply-to is set
+      reply_to: data.email,
     };
 
     await emailjs.send(
@@ -43,11 +45,12 @@ export const sendUserConfirmationEmail = async (data: UserData) => {
 export const sendOrganizerNotificationEmail = async (data: UserData) => {
   try {
     const templateParams = {
-      to_email: ORGANIZER_EMAIL, // Explicitly set organizer's email
-      participant_name: `${data.firstName} ${data.lastName}`,
-      participant_email: data.email,
-      participant_phone: data.phone,
-      participant_status: data.status,
+      to_email: ORGANIZER_EMAIL,
+      email: data.email,
+      nom: data.lastName,
+      prenom: data.firstName,
+      tel: data.phone,
+      status: data.status,
       reply_to: ORGANIZER_EMAIL,
     };
 
