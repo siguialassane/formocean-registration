@@ -21,7 +21,7 @@ export const sendUserConfirmationEmail = async (data: UserData) => {
   try {
     const verificationUrl = `${window.location.origin}/verify-info?id=${data.id}`;
     
-    // Generate QR code URL using QR Server
+    // Generate QR code URL using QR Server with HTTPS
     const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(verificationUrl)}`;
     
     const templateParams = {
@@ -34,6 +34,7 @@ export const sendUserConfirmationEmail = async (data: UserData) => {
       status: data.status,
       verification_url: verificationUrl,
       qr_code_url: qrCodeUrl,
+      profile_url: verificationUrl, // Ajout d'une URL de profil qui sera la même que l'URL de vérification
       reply_to: data.email,
     };
 
