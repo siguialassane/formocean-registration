@@ -19,18 +19,7 @@ type UserData = {
 
 export const sendUserConfirmationEmail = async (data: UserData) => {
   try {
-    const vCardData = [
-      'BEGIN:VCARD',
-      'VERSION:3.0',
-      `N:${data.lastName};${data.firstName};;;`,
-      `FN:${data.firstName} ${data.lastName}`,
-      `TEL;TYPE=CELL:${data.phone}`,
-      `EMAIL:${data.email}`,
-      `TITLE:${data.status}`,
-      'END:VCARD'
-    ].join('\n');
-
-    const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(vCardData)}`;
+    const verificationUrl = `${window.location.origin}/verify-registration?id=${data.id}`;
     
     const templateParams = {
       from_name: "Admin",
@@ -40,7 +29,7 @@ export const sendUserConfirmationEmail = async (data: UserData) => {
       prenom: data.firstName,
       tel: data.phone,
       status: data.status,
-      qr_code_url: qrCodeUrl,
+      verification_url: verificationUrl,
       reply_to: data.email,
     };
 
