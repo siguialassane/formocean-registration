@@ -14,7 +14,7 @@ export const generateVCard = (data: {
     `EMAIL:${data.email}`,
     `TITLE:${data.status}`,
     'END:VCARD'
-  ].join('\n');
+  ].join('\r\n');
 
   return vCard;
 };
