@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import emailjs from '@emailjs/browser';
 
 const ConfirmationInscription = () => {
   const [countdown, setCountdown] = useState(5);
@@ -45,6 +46,55 @@ const ConfirmationInscription = () => {
     }
   };
 
+  const sendConfirmationEmail = async (data: any) => {
+    try {
+      const templateParams = {
+        to_email: data.email,
+        to_name: `${data.firstName} ${data.lastName}`,
+        verification_url: `${window.location.origin}/verify-registration?id=${data.id}`,
+        qr_code_url: `${window.location.origin}/verify-info?id=${data.id}`
+      };
+
+      const response = await emailjs.send(
+        'service_2qk0kgj',  // Votre Service ID
+        'template_jw8d39l', // Votre Template ID
+        templateParams,
+        'user_your_user_id' // Votre Public Key
+      );
+
+      console.log('Email envoyé avec succès:', response);
+      return true;
+    } catch (error) {
+      console.error('Erreur lors de l\'envoi de l\'email:', error);
+      return false;
+    }
+  };
+
+  const sendOrganizerNotification = async (data: any) => {
+    try {
+      const templateParams = {
+        organizer_email: 'votre@email.com', // L'email de l'organisateur
+        participant_name: `${data.firstName} ${data.lastName}`,
+        participant_email: data.email,
+        participant_phone: data.phone,
+        participant_status: data.status
+      };
+
+      const response = await emailjs.send(
+        'service_2qk0kgj',  // Votre Service ID
+        'template_organizer', // Template ID pour l'organisateur
+        templateParams,
+        'user_your_user_id' // Votre Public Key
+      );
+
+      console.log('Notification envoyée avec succès:', response);
+      return true;
+    } catch (error) {
+      console.error('Erreur lors de l\'envoi de la notification:', error);
+      return false;
+    }
+  };
+
   const handleFinalSubmission = async () => {
     if (!formData) return;
 
@@ -69,43 +119,29 @@ const ConfirmationInscription = () => {
       }
 
       console.log("Data inserted successfully:", insertedData);
-      toast.success("Inscription réussie !");
-
+      
       // Send confirmation email
-      const { error: emailError } = await supabase.functions.invoke('send-confirmation-email', {
-        body: {
-          to: formData.email,
-          firstName: formData.firstName,
-          lastName: formData.lastName,
-          verificationUrl: `${window.location.origin}/verify-registration?id=${insertedData.id}`,
-          qrCodeUrl: `${window.location.origin}/verify-info?id=${insertedData.id}`
-        }
+      const emailSent = await sendConfirmationEmail({
+        ...formData,
+        id: insertedData.id
       });
 
-      if (emailError) {
-        console.error("Email error:", emailError);
+      if (emailSent) {
+        toast.success("Email de confirmation envoyé !");
+      } else {
         toast.error("Erreur lors de l'envoi de l'email de confirmation");
-        throw emailError;
       }
 
       // Send notification to organizer
-      const { error: notifError } = await supabase.functions.invoke('send-organizer-notification', {
-        body: {
-          firstName: formData.firstName,
-          lastName: formData.lastName,
-          email: formData.email,
-          phone: formData.phone,
-          status: formData.status
-        }
-      });
+      const notificationSent = await sendOrganizerNotification(formData);
 
-      if (notifError) {
-        console.error("Notification error:", notifError);
-        toast.error("Erreur lors de l'envoi de la notification");
-        throw notifError;
+      if (notificationSent) {
+        console.log("Notification envoyée à l'organisateur");
+      } else {
+        console.error("Erreur lors de l'envoi de la notification");
       }
 
-      console.log("Emails sent successfully");
+      toast.success("Inscription réussie !");
       // Clear localStorage after successful submission
       localStorage.removeItem('registrationData');
     } catch (error) {
