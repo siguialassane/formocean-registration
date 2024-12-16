@@ -91,6 +91,7 @@ const VerifyInfo = () => {
               <p>{userData.status}</p>
             </div>
           </div>
+          <p className="text-center text-sm text-gray-500">@exias</p>
         </CardContent>
       </Card>
     </div>

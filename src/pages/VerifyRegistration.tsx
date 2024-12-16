@@ -85,6 +85,7 @@ const VerifyRegistration = () => {
           <p className="text-sm text-gray-500 text-center">
             Scannez ce code QR pour enregistrer le contact
           </p>
+          <p className="text-center text-sm text-gray-500">@exias</p>
         </CardContent>
       </Card>
     </div>
