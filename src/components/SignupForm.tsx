@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { useNavigate } from "react-router-dom";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { signupSchema } from "@/lib/validations";
 import { Button } from "@/components/ui/button";
@@ -20,6 +19,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useToast } from "@/components/ui/use-toast";
+import { supabase } from "@/integrations/supabase/client";
+import { sendUserConfirmationEmail, sendOrganizerNotificationEmail } from "@/utils/emailService";
 
 type FormData = {
   firstName: string;
@@ -30,7 +32,7 @@ type FormData = {
 };
 
 const SignupForm = () => {
-  const navigate = useNavigate();
+  const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
   
   const form = useForm<FormData>({
@@ -47,11 +49,34 @@ const SignupForm = () => {
   const onSubmit = async (data: FormData) => {
     setIsSubmitting(true);
     try {
-      // Store form data in localStorage
-      localStorage.setItem('registrationData', JSON.stringify(data));
-      navigate("/confirmation-inscription");
+      const { data: insertedData, error } = await supabase.from("contacts").insert({
+        nom: data.lastName,
+        prenom: data.firstName,
+        email: data.email,
+        tel: data.phone,
+        status: data.status.charAt(0).toUpperCase() + data.status.slice(1),
+      }).select().single();
+
+      if (error) throw error;
+
+      // Send confirmation emails with the registration ID
+      await Promise.all([
+        sendUserConfirmationEmail({ ...data, id: insertedData.id }),
+        sendOrganizerNotificationEmail(data)
+      ]);
+
+      toast({
+        title: "Inscription réussie!",
+        description: "Vos informations ont été enregistrées avec succès. Un email de confirmation vous a été envoyé.",
+      });
+      form.reset();
     } catch (error) {
       console.error("Erreur lors de l'inscription:", error);
+      toast({
+        variant: "destructive",
+        title: "Erreur",
+        description: "Une erreur est survenue lors de l'inscription. Veuillez réessayer.",
+      });
     } finally {
       setIsSubmitting(false);
     }

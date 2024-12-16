@@ -1,62 +1,45 @@
-import emailjs from '@emailjs/browser';
+import { supabase } from "@/integrations/supabase/client";
 
-interface EmailTemplateParams extends Record<string, unknown> {
-  to_email: string;
-  to_name: string;
-  verification_url: string;
-  qr_code_url: string;
-}
+const FRONTEND_URL = "https://evenement-registration.exias.app";
 
-interface OrganizerNotificationParams extends Record<string, unknown> {
-  organizer_email: string;
-  participant_name: string;
-  participant_email: string;
-  participant_phone: string;
-  participant_status: string;
-}
+export const sendUserConfirmationEmail = async (data: {
+  firstName: string;
+  lastName: string;
+  email: string;
+  id: string;
+}) => {
+  const verificationUrl = `${FRONTEND_URL}/verify-registration?id=${data.id}`;
+  const qrCodeUrl = `${FRONTEND_URL}/verify-info?id=${data.id}`;
 
-export const sendConfirmationEmail = async (data: EmailTemplateParams): Promise<boolean> => {
-  if (!data.to_email) {
-    console.error('Email recipient is missing');
-    return false;
-  }
+  const { error } = await supabase.functions.invoke('send-confirmation-email', {
+    body: {
+      to: data.email,
+      firstName: data.firstName,
+      lastName: data.lastName,
+      verificationUrl,
+      qrCodeUrl
+    }
+  });
 
-  try {
-    console.log('Sending confirmation email with params:', data);
-    const response = await emailjs.send(
-      'service_sxgma2j',
-      'template_2ncsaxe',
-      data,
-      'Ro8JahlKtBGVd_OI4'
-    );
-
-    console.log('Email envoyé avec succès:', response);
-    return true;
-  } catch (error) {
-    console.error('Erreur lors de l\'envoi de l\'email:', error);
-    return false;
-  }
+  if (error) throw error;
 };
 
-export const sendOrganizerNotification = async (data: OrganizerNotificationParams): Promise<boolean> => {
-  if (!data.organizer_email || !data.participant_email) {
-    console.error('Required email addresses are missing');
-    return false;
-  }
+export const sendOrganizerNotificationEmail = async (data: {
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+  status: string;
+}) => {
+  const { error } = await supabase.functions.invoke('send-organizer-notification', {
+    body: {
+      firstName: data.firstName,
+      lastName: data.lastName,
+      email: data.email,
+      phone: data.phone,
+      status: data.status
+    }
+  });
 
-  try {
-    console.log('Sending organizer notification with params:', data);
-    const response = await emailjs.send(
-      'service_sxgma2j',
-      'template_dp1tu2w',
-      data,
-      'Ro8JahlKtBGVd_OI4'
-    );
-
-    console.log('Notification envoyée avec succès:', response);
-    return true;
-  } catch (error) {
-    console.error('Erreur lors de l\'envoi de la notification:', error);
-    return false;
-  }
+  if (error) throw error;
 };
