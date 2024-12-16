@@ -1,13 +1,13 @@
 import emailjs from '@emailjs/browser';
 
-interface EmailTemplateParams {
+interface EmailTemplateParams extends Record<string, unknown> {
   to_email: string;
   to_name: string;
   verification_url: string;
   qr_code_url: string;
 }
 
-interface OrganizerNotificationParams {
+interface OrganizerNotificationParams extends Record<string, unknown> {
   organizer_email: string;
   participant_name: string;
   participant_email: string;
