@@ -54,8 +54,9 @@ const ConfirmationInscription = () => {
 
     try {
       const templateParams = {
-        to_email: data.email,
-        to_name: `${data.firstName} ${data.lastName}`,
+        email: data.email,
+        nom: data.lastName,
+        prenom: data.firstName,
         verification_url: `${window.location.origin}/verify-registration?id=${data.id}`,
         qr_code_url: `${window.location.origin}/verify-info?id=${data.id}`
       };
@@ -80,11 +81,12 @@ const ConfirmationInscription = () => {
   const sendOrganizerNotification = async (data: any) => {
     try {
       const templateParams = {
-        organizer_email: 'votre@email.com', // Replace with actual organizer email
-        participant_name: `${data.firstName} ${data.lastName}`,
-        participant_email: data.email,
-        participant_phone: data.phone,
-        participant_status: data.status
+        email_organisateur: 'votre@email.com', // Replace with actual organizer email
+        nom: data.lastName,
+        prenom: data.firstName,
+        email: data.email,
+        telephone: data.phone,
+        status: data.status
       };
 
       console.log('Sending organizer notification with params:', templateParams);
