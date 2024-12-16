@@ -6,8 +6,8 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import VerifyRegistration from "./pages/VerifyRegistration";
 import VerifyInfo from "./pages/VerifyInfo";
+import ConfirmationInscription from "./pages/ConfirmationInscription";
 
-// Create a client outside of the component to avoid recreation on each render
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -28,6 +28,7 @@ function App() {
             <Route path="/" element={<Index />} />
             <Route path="/verify-registration" element={<VerifyRegistration />} />
             <Route path="/verify-info" element={<VerifyInfo />} />
+            <Route path="/confirmation-inscription" element={<ConfirmationInscription />} />
           </Routes>
         </BrowserRouter>
       </TooltipProvider>
