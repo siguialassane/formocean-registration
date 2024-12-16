@@ -6,6 +6,7 @@ import { sendUserConfirmationEmail, sendOrganizerNotificationEmail } from "@/uti
 
 const ConfirmationInscription = () => {
   const [countdown, setCountdown] = useState(5);
+  const [showButton, setShowButton] = useState(true);
   const navigate = useNavigate();
   const [formData, setFormData] = useState<any>(null);
 
@@ -22,6 +23,7 @@ const ConfirmationInscription = () => {
       setCountdown((prev) => {
         if (prev <= 1) {
           clearInterval(timer);
+          handleButtonDisappear();
           handleFinalSubmission();
         }
         return prev - 1;
@@ -31,10 +33,23 @@ const ConfirmationInscription = () => {
     return () => clearInterval(timer);
   }, []);
 
+  const handleButtonDisappear = () => {
+    setShowButton(false);
+    // Add firework animation class
+    const button = document.querySelector('.return-button');
+    if (button) {
+      button.classList.add('animate-firework');
+      setTimeout(() => {
+        button.classList.add('hidden');
+      }, 500);
+    }
+  };
+
   const handleFinalSubmission = async () => {
     if (!formData) return;
 
     try {
+      console.log("Sending data to database:", formData);
       const { data: insertedData, error } = await supabase
         .from("contacts")
         .insert({
@@ -47,13 +62,19 @@ const ConfirmationInscription = () => {
         .select()
         .single();
 
-      if (error) throw error;
+      if (error) {
+        console.error("Database error:", error);
+        throw error;
+      }
+
+      console.log("Data inserted successfully:", insertedData);
 
       await Promise.all([
         sendUserConfirmationEmail({ ...formData, id: insertedData.id }),
         sendOrganizerNotificationEmail(formData),
       ]);
 
+      console.log("Emails sent successfully");
       // Clear localStorage after successful submission
       localStorage.removeItem('registrationData');
     } catch (error) {
@@ -89,14 +110,16 @@ const ConfirmationInscription = () => {
           </p>
         </div>
 
-        <div className="mt-8 text-center">
-          <Button
-            onClick={handleReturn}
-            className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg transition-colors"
-          >
-            Modifier mes informations ({countdown}s)
-          </Button>
-        </div>
+        {showButton && (
+          <div className="mt-8 text-center">
+            <Button
+              onClick={handleReturn}
+              className="return-button bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg transition-all duration-500"
+            >
+              Modifier mes informations ({countdown}s)
+            </Button>
+          </div>
+        )}
       </div>
     </div>
   );
