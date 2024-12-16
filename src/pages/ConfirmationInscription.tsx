@@ -47,6 +47,11 @@ const ConfirmationInscription = () => {
   };
 
   const sendConfirmationEmail = async (data: any) => {
+    if (!data.email) {
+      console.error('Email recipient is missing');
+      return false;
+    }
+
     try {
       const templateParams = {
         to_email: data.email,
@@ -55,11 +60,13 @@ const ConfirmationInscription = () => {
         qr_code_url: `${window.location.origin}/verify-info?id=${data.id}`
       };
 
+      console.log('Sending confirmation email with params:', templateParams);
+
       const response = await emailjs.send(
-        'service_sxgma2j',  // Service ID fourni
-        'template_2ncsaxe', // Template ID fourni pour la confirmation
+        'service_sxgma2j',
+        'template_2ncsaxe',
         templateParams,
-        'Ro8JahlKtBGVd_OI4' // Public Key fournie
+        'Ro8JahlKtBGVd_OI4'
       );
 
       console.log('Email envoyé avec succès:', response);
@@ -73,18 +80,20 @@ const ConfirmationInscription = () => {
   const sendOrganizerNotification = async (data: any) => {
     try {
       const templateParams = {
-        organizer_email: 'votre@email.com', // L'email de l'organisateur
+        organizer_email: 'votre@email.com', // Replace with actual organizer email
         participant_name: `${data.firstName} ${data.lastName}`,
         participant_email: data.email,
         participant_phone: data.phone,
         participant_status: data.status
       };
 
+      console.log('Sending organizer notification with params:', templateParams);
+
       const response = await emailjs.send(
-        'service_sxgma2j',  // Service ID fourni
-        'template_dp1tu2w', // Template ID fourni pour l'organisateur
+        'service_sxgma2j',
+        'template_dp1tu2w',
         templateParams,
-        'Ro8JahlKtBGVd_OI4' // Public Key fournie
+        'Ro8JahlKtBGVd_OI4'
       );
 
       console.log('Notification envoyée avec succès:', response);
@@ -96,7 +105,10 @@ const ConfirmationInscription = () => {
   };
 
   const handleFinalSubmission = async () => {
-    if (!formData) return;
+    if (!formData) {
+      console.error('No form data available');
+      return;
+    }
 
     try {
       console.log("Sending data to database:", formData);
@@ -120,7 +132,7 @@ const ConfirmationInscription = () => {
 
       console.log("Data inserted successfully:", insertedData);
       
-      // Send confirmation email
+      // Send confirmation email with the inserted data
       const emailSent = await sendConfirmationEmail({
         ...formData,
         id: insertedData.id
