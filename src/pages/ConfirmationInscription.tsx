@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
-import { sendUserConfirmationEmail, sendOrganizerNotificationEmail } from "@/utils/emailService";
+import { toast } from "sonner";
 
 const ConfirmationInscription = () => {
   const [countdown, setCountdown] = useState(5);
@@ -64,21 +64,53 @@ const ConfirmationInscription = () => {
 
       if (error) {
         console.error("Database error:", error);
+        toast.error("Erreur lors de l'enregistrement des données");
         throw error;
       }
 
       console.log("Data inserted successfully:", insertedData);
+      toast.success("Inscription réussie !");
 
-      await Promise.all([
-        sendUserConfirmationEmail({ ...formData, id: insertedData.id }),
-        sendOrganizerNotificationEmail(formData),
-      ]);
+      // Send confirmation email
+      const { error: emailError } = await supabase.functions.invoke('send-confirmation-email', {
+        body: {
+          to: formData.email,
+          firstName: formData.firstName,
+          lastName: formData.lastName,
+          verificationUrl: `${window.location.origin}/verify-registration?id=${insertedData.id}`,
+          qrCodeUrl: `${window.location.origin}/verify-info?id=${insertedData.id}`
+        }
+      });
+
+      if (emailError) {
+        console.error("Email error:", emailError);
+        toast.error("Erreur lors de l'envoi de l'email de confirmation");
+        throw emailError;
+      }
+
+      // Send notification to organizer
+      const { error: notifError } = await supabase.functions.invoke('send-organizer-notification', {
+        body: {
+          firstName: formData.firstName,
+          lastName: formData.lastName,
+          email: formData.email,
+          phone: formData.phone,
+          status: formData.status
+        }
+      });
+
+      if (notifError) {
+        console.error("Notification error:", notifError);
+        toast.error("Erreur lors de l'envoi de la notification");
+        throw notifError;
+      }
 
       console.log("Emails sent successfully");
       // Clear localStorage after successful submission
       localStorage.removeItem('registrationData');
     } catch (error) {
       console.error("Erreur lors de l'inscription finale:", error);
+      toast.error("Une erreur est survenue lors de l'inscription");
     }
   };
 

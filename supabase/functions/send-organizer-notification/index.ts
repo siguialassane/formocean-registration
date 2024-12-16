@@ -22,8 +22,9 @@ const handler = async (req: Request): Promise<Response> => {
   }
 
   try {
+    console.log("Received request to send organizer notification");
     const notificationRequest: NotificationRequest = await req.json();
-    console.log("Sending organizer notification for:", notificationRequest.email);
+    console.log("Notification request data:", notificationRequest);
 
     const res = await fetch("https://api.resend.com/emails", {
       method: "POST",
@@ -33,7 +34,7 @@ const handler = async (req: Request): Promise<Response> => {
       },
       body: JSON.stringify({
         from: "Événement Registration <onboarding@resend.dev>",
-        to: ["organisateur@example.com"], // Replace with actual organizer email
+        to: ["organisateur@example.com"], // Remplacez par l'email de l'organisateur
         subject: "Nouvelle inscription à l'événement",
         html: `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
@@ -53,7 +54,7 @@ const handler = async (req: Request): Promise<Response> => {
 
     if (res.ok) {
       const data = await res.json();
-      console.log("Notification sent successfully:", data);
+      console.log("Notification email sent successfully:", data);
       return new Response(JSON.stringify(data), {
         status: 200,
         headers: { ...corsHeaders, "Content-Type": "application/json" },

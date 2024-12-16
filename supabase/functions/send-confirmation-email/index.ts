@@ -22,8 +22,9 @@ const handler = async (req: Request): Promise<Response> => {
   }
 
   try {
+    console.log("Received request to send confirmation email");
     const emailRequest: EmailRequest = await req.json();
-    console.log("Sending confirmation email to:", emailRequest.to);
+    console.log("Email request data:", emailRequest);
 
     const res = await fetch("https://api.resend.com/emails", {
       method: "POST",
