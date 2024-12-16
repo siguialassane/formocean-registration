@@ -1,45 +1,62 @@
-import { supabase } from "@/integrations/supabase/client";
+import emailjs from '@emailjs/browser';
 
-const FRONTEND_URL = "https://evenement-registration.exias.app";
+interface EmailTemplateParams {
+  to_email: string;
+  to_name: string;
+  verification_url: string;
+  qr_code_url: string;
+}
 
-export const sendUserConfirmationEmail = async (data: {
-  firstName: string;
-  lastName: string;
-  email: string;
-  id: string;
-}) => {
-  const verificationUrl = `${FRONTEND_URL}/verify-registration?id=${data.id}`;
-  const qrCodeUrl = `${FRONTEND_URL}/verify-info?id=${data.id}`;
+interface OrganizerNotificationParams {
+  organizer_email: string;
+  participant_name: string;
+  participant_email: string;
+  participant_phone: string;
+  participant_status: string;
+}
 
-  const { error } = await supabase.functions.invoke('send-confirmation-email', {
-    body: {
-      to: data.email,
-      firstName: data.firstName,
-      lastName: data.lastName,
-      verificationUrl,
-      qrCodeUrl
-    }
-  });
+export const sendConfirmationEmail = async (data: EmailTemplateParams): Promise<boolean> => {
+  if (!data.to_email) {
+    console.error('Email recipient is missing');
+    return false;
+  }
 
-  if (error) throw error;
+  try {
+    console.log('Sending confirmation email with params:', data);
+    const response = await emailjs.send(
+      'service_sxgma2j',
+      'template_2ncsaxe',
+      data,
+      'Ro8JahlKtBGVd_OI4'
+    );
+
+    console.log('Email envoyé avec succès:', response);
+    return true;
+  } catch (error) {
+    console.error('Erreur lors de l\'envoi de l\'email:', error);
+    return false;
+  }
 };
 
-export const sendOrganizerNotificationEmail = async (data: {
-  firstName: string;
-  lastName: string;
-  email: string;
-  phone: string;
-  status: string;
-}) => {
-  const { error } = await supabase.functions.invoke('send-organizer-notification', {
-    body: {
-      firstName: data.firstName,
-      lastName: data.lastName,
-      email: data.email,
-      phone: data.phone,
-      status: data.status
-    }
-  });
+export const sendOrganizerNotification = async (data: OrganizerNotificationParams): Promise<boolean> => {
+  if (!data.organizer_email || !data.participant_email) {
+    console.error('Required email addresses are missing');
+    return false;
+  }
 
-  if (error) throw error;
+  try {
+    console.log('Sending organizer notification with params:', data);
+    const response = await emailjs.send(
+      'service_sxgma2j',
+      'template_dp1tu2w',
+      data,
+      'Ro8JahlKtBGVd_OI4'
+    );
+
+    console.log('Notification envoyée avec succès:', response);
+    return true;
+  } catch (error) {
+    console.error('Erreur lors de l\'envoi de la notification:', error);
+    return false;
+  }
 };

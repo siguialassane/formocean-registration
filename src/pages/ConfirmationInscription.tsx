@@ -3,7 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import emailjs from '@emailjs/browser';
+import ConfirmationMessage from "@/components/ConfirmationMessage";
+import { sendConfirmationEmail, sendOrganizerNotification } from "@/utils/emailService";
 
 const ConfirmationInscription = () => {
   const [countdown, setCountdown] = useState(5);
@@ -12,7 +13,6 @@ const ConfirmationInscription = () => {
   const [formData, setFormData] = useState<any>(null);
 
   useEffect(() => {
-    // Get data from localStorage
     const storedData = localStorage.getItem('registrationData');
     if (!storedData) {
       navigate("/");
@@ -36,71 +36,12 @@ const ConfirmationInscription = () => {
 
   const handleButtonDisappear = () => {
     setShowButton(false);
-    // Add firework animation class
     const button = document.querySelector('.return-button');
     if (button) {
       button.classList.add('animate-firework');
       setTimeout(() => {
         button.classList.add('hidden');
       }, 500);
-    }
-  };
-
-  const sendConfirmationEmail = async (data: any) => {
-    if (!data.email) {
-      console.error('Email recipient is missing');
-      return false;
-    }
-
-    try {
-      const templateParams = {
-        to_email: data.email,
-        to_name: `${data.firstName} ${data.lastName}`,
-        verification_url: `${window.location.origin}/verify-registration?id=${data.id}`,
-        qr_code_url: `${window.location.origin}/verify-info?id=${data.id}`
-      };
-
-      console.log('Sending confirmation email with params:', templateParams);
-
-      const response = await emailjs.send(
-        'service_sxgma2j',
-        'template_2ncsaxe',
-        templateParams,
-        'Ro8JahlKtBGVd_OI4'
-      );
-
-      console.log('Email envoyé avec succès:', response);
-      return true;
-    } catch (error) {
-      console.error('Erreur lors de l\'envoi de l\'email:', error);
-      return false;
-    }
-  };
-
-  const sendOrganizerNotification = async (data: any) => {
-    try {
-      const templateParams = {
-        organizer_email: 'votre@email.com', // Replace with actual organizer email
-        participant_name: `${data.firstName} ${data.lastName}`,
-        participant_email: data.email,
-        participant_phone: data.phone,
-        participant_status: data.status
-      };
-
-      console.log('Sending organizer notification with params:', templateParams);
-
-      const response = await emailjs.send(
-        'service_sxgma2j',
-        'template_dp1tu2w',
-        templateParams,
-        'Ro8JahlKtBGVd_OI4'
-      );
-
-      console.log('Notification envoyée avec succès:', response);
-      return true;
-    } catch (error) {
-      console.error('Erreur lors de l\'envoi de la notification:', error);
-      return false;
     }
   };
 
@@ -132,10 +73,11 @@ const ConfirmationInscription = () => {
 
       console.log("Data inserted successfully:", insertedData);
       
-      // Send confirmation email with the inserted data
       const emailSent = await sendConfirmationEmail({
-        ...formData,
-        id: insertedData.id
+        to_email: formData.email,
+        to_name: `${formData.firstName} ${formData.lastName}`,
+        verification_url: `${window.location.origin}/verify-registration?id=${insertedData.id}`,
+        qr_code_url: `${window.location.origin}/verify-info?id=${insertedData.id}`
       });
 
       if (emailSent) {
@@ -144,8 +86,13 @@ const ConfirmationInscription = () => {
         toast.error("Erreur lors de l'envoi de l'email de confirmation");
       }
 
-      // Send notification to organizer
-      const notificationSent = await sendOrganizerNotification(formData);
+      const notificationSent = await sendOrganizerNotification({
+        organizer_email: 'votre@email.com',
+        participant_name: `${formData.firstName} ${formData.lastName}`,
+        participant_email: formData.email,
+        participant_phone: formData.phone,
+        participant_status: formData.status
+      });
 
       if (notificationSent) {
         console.log("Notification envoyée à l'organisateur");
@@ -154,7 +101,6 @@ const ConfirmationInscription = () => {
       }
 
       toast.success("Inscription réussie !");
-      // Clear localStorage after successful submission
       localStorage.removeItem('registrationData');
     } catch (error) {
       console.error("Erreur lors de l'inscription finale:", error);
@@ -170,37 +116,17 @@ const ConfirmationInscription = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-white p-4">
-      <div className="w-full max-w-2xl bg-white rounded-xl shadow-lg p-8 space-y-6">
-        <h1 className="text-3xl font-bold text-center text-gray-800 mb-6">
-          Félicitations {formData?.firstName} {formData?.lastName} ! 🎉
-        </h1>
-        
-        <div className="space-y-4 text-lg text-gray-700 leading-relaxed">
-          <p className="font-medium">
-            Votre inscription a été validée avec succès.
-          </p>
-          <p>
-            Vous recevrez prochainement un e-mail de confirmation avec les prochaines étapes.
-          </p>
-          <p>
-            Nous sommes impatients de vous accueillir à notre événement.
-          </p>
-          <p className="font-medium">
-            Merci d'avoir pris le temps de vous inscrire !
-          </p>
+      <ConfirmationMessage firstName={formData.firstName} lastName={formData.lastName} />
+      {showButton && (
+        <div className="mt-8 text-center">
+          <Button
+            onClick={handleReturn}
+            className="return-button bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg transition-all duration-500"
+          >
+            Modifier mes informations ({countdown}s)
+          </Button>
         </div>
-
-        {showButton && (
-          <div className="mt-8 text-center">
-            <Button
-              onClick={handleReturn}
-              className="return-button bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg transition-all duration-500"
-            >
-              Modifier mes informations ({countdown}s)
-            </Button>
-          </div>
-        )}
-      </div>
+      )}
     </div>
   );
 };
