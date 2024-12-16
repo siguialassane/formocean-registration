@@ -21,6 +21,7 @@ import {
 } from "@/components/ui/select";
 import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { sendConfirmationEmail } from "@/utils/emailService";
 
 type FormData = {
   firstName: string;
@@ -58,9 +59,12 @@ const SignupForm = () => {
 
       if (error) throw error;
 
+      // Envoi de l'email de confirmation
+      await sendConfirmationEmail(data);
+
       toast({
         title: "Inscription réussie!",
-        description: "Vos informations ont été enregistrées avec succès. Un email de confirmation vous sera envoyé.",
+        description: "Vos informations ont été enregistrées avec succès. Un email de confirmation vous a été envoyé.",
       });
       form.reset();
     } catch (error) {
