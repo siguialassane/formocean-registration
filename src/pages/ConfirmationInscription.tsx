@@ -1,20 +1,22 @@
 import { useState, useEffect } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { sendUserConfirmationEmail, sendOrganizerNotificationEmail } from "@/utils/emailService";
 
 const ConfirmationInscription = () => {
   const [countdown, setCountdown] = useState(5);
-  const location = useLocation();
   const navigate = useNavigate();
-  const { formData } = location.state || {};
+  const [formData, setFormData] = useState<any>(null);
 
   useEffect(() => {
-    if (!formData) {
+    // Get data from localStorage
+    const storedData = localStorage.getItem('registrationData');
+    if (!storedData) {
       navigate("/");
       return;
     }
+    setFormData(JSON.parse(storedData));
 
     const timer = setInterval(() => {
       setCountdown((prev) => {
@@ -27,9 +29,11 @@ const ConfirmationInscription = () => {
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [formData]);
+  }, []);
 
   const handleFinalSubmission = async () => {
+    if (!formData) return;
+
     try {
       const { data: insertedData, error } = await supabase
         .from("contacts")
@@ -49,9 +53,16 @@ const ConfirmationInscription = () => {
         sendUserConfirmationEmail({ ...formData, id: insertedData.id }),
         sendOrganizerNotificationEmail(formData),
       ]);
+
+      // Clear localStorage after successful submission
+      localStorage.removeItem('registrationData');
     } catch (error) {
       console.error("Erreur lors de l'inscription finale:", error);
     }
+  };
+
+  const handleReturn = () => {
+    navigate("/");
   };
 
   if (!formData) return null;
@@ -80,7 +91,7 @@ const ConfirmationInscription = () => {
 
         <div className="mt-8 text-center">
           <Button
-            onClick={() => navigate("/")}
+            onClick={handleReturn}
             className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg transition-colors"
           >
             Modifier mes informations ({countdown}s)

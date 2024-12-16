@@ -47,7 +47,9 @@ const SignupForm = () => {
   const onSubmit = async (data: FormData) => {
     setIsSubmitting(true);
     try {
-      navigate("/confirmation-inscription", { state: { formData: data } });
+      // Store form data in localStorage
+      localStorage.setItem('registrationData', JSON.stringify(data));
+      navigate("/confirmation-inscription");
     } catch (error) {
       console.error("Erreur lors de l'inscription:", error);
     } finally {
