@@ -2,7 +2,17 @@
 
 ## Project info
 
-**URL**: https://lovable.dev/projects/2ad8995f-96f3-48a7-aa57-fae8ebb8b4c0
+**URL**: https://evenement-registration.exias.app
+
+## Project Overview
+
+This application is a robust, stable, and fast registration system optimized for all devices (mobile and desktop) and browsers. It features:
+
+- Responsive design that works on all screen sizes
+- Fast loading and performance
+- QR code generation for contact information
+- Cross-browser compatibility
+- Mobile-first approach
 
 ## How can I edit this code?
 
@@ -10,7 +20,7 @@ There are several ways of editing your application.
 
 **Use @exias**
 
-Simply visit the [@exias Project](https://lovable.dev/projects/2ad8995f-96f3-48a7-aa57-fae8ebb8b4c0) and start prompting.
+Simply visit the [@exias Project](https://evenement-registration.exias.app) and start prompting.
 
 Changes made via @exias will be committed automatically to this repo.
 
@@ -52,17 +62,18 @@ npm run dev
 
 ## What technologies are used for this project?
 
-This project is built with .
+This project is built with:
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+- Vite (for fast builds and development)
+- TypeScript (for type safety)
+- React (for UI components)
+- shadcn-ui (for beautiful, accessible components)
+- Tailwind CSS (for responsive styling)
+- Supabase (for backend services)
 
 ## How can I deploy this project?
 
-Simply open [@exias](https://lovable.dev/projects/2ad8995f-96f3-48a7-aa57-fae8ebb8b4c0) and click on Share -> Publish.
+Simply open [@exias](https://evenement-registration.exias.app) and click on Share -> Publish.
 
 ## I want to use a custom domain - is that possible?
 
