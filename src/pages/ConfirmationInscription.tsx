@@ -54,9 +54,8 @@ const ConfirmationInscription = () => {
 
     try {
       const templateParams = {
-        email: data.email,
-        nom: data.lastName,
-        prenom: data.firstName,
+        to_email: data.email,
+        to_name: `${data.firstName} ${data.lastName}`,
         verification_url: `${window.location.origin}/verify-registration?id=${data.id}`,
         qr_code_url: `${window.location.origin}/verify-info?id=${data.id}`
       };
@@ -81,12 +80,11 @@ const ConfirmationInscription = () => {
   const sendOrganizerNotification = async (data: any) => {
     try {
       const templateParams = {
-        email_organisateur: 'votre@email.com', // Replace with actual organizer email
-        nom: data.lastName,
-        prenom: data.firstName,
-        email: data.email,
-        telephone: data.phone,
-        status: data.status
+        organizer_email: 'votre@email.com', // Replace with actual organizer email
+        participant_name: `${data.firstName} ${data.lastName}`,
+        participant_email: data.email,
+        participant_phone: data.phone,
+        participant_status: data.status
       };
 
       console.log('Sending organizer notification with params:', templateParams);
@@ -174,7 +172,7 @@ const ConfirmationInscription = () => {
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-white p-4">
       <div className="w-full max-w-2xl bg-white rounded-xl shadow-lg p-8 space-y-6">
         <h1 className="text-3xl font-bold text-center text-gray-800 mb-6">
-          Félicitations {formData.firstName} {formData.lastName} ! 🎉
+          Félicitations {formData?.firstName} {formData?.lastName} ! 🎉
         </h1>
         
         <div className="space-y-4 text-lg text-gray-700 leading-relaxed">
