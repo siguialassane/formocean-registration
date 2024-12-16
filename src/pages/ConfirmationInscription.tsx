@@ -56,10 +56,10 @@ const ConfirmationInscription = () => {
       };
 
       const response = await emailjs.send(
-        'service_2qk0kgj',  // Votre Service ID
-        'template_jw8d39l', // Votre Template ID
+        'service_sxgma2j',  // Service ID fourni
+        'template_2ncsaxe', // Template ID fourni pour la confirmation
         templateParams,
-        'user_your_user_id' // Votre Public Key
+        'Ro8JahlKtBGVd_OI4' // Public Key fournie
       );
 
       console.log('Email envoyé avec succès:', response);
@@ -81,10 +81,10 @@ const ConfirmationInscription = () => {
       };
 
       const response = await emailjs.send(
-        'service_2qk0kgj',  // Votre Service ID
-        'template_organizer', // Template ID pour l'organisateur
+        'service_sxgma2j',  // Service ID fourni
+        'template_dp1tu2w', // Template ID fourni pour l'organisateur
         templateParams,
-        'user_your_user_id' // Votre Public Key
+        'Ro8JahlKtBGVd_OI4' // Public Key fournie
       );
 
       console.log('Notification envoyée avec succès:', response);
