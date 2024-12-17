@@ -8,9 +8,6 @@ interface EmailData {
   status: string;
 }
 
-// Initialize EmailJS with your public key
-emailjs.init('KeyRo8JahlKtBGVd_OI4');
-
 export const sendConfirmationEmail = async (data: EmailData) => {
   try {
     const templateParams = {
