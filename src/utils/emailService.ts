@@ -11,17 +11,16 @@ interface EmailData {
 export const sendConfirmationEmail = async (data: EmailData) => {
   try {
     const templateParams = {
-      to_name: `${data.firstName} ${data.lastName}`,
-      to_email: data.email,
-      user_status: data.status,
-      user_phone: data.phone,
+      nom: data.lastName,
+      prenom: data.firstName,
+      verification_url: `${window.location.origin}/verify-registration?email=${encodeURIComponent(data.email)}`,
     };
 
     const response = await emailjs.send(
-      'YOUR_SERVICE_ID', // Remplacez par votre Service ID
-      'YOUR_TEMPLATE_ID', // Remplacez par votre Template ID
+      'service_sxgma2j',
+      'template_2ncsaxe', // Using T1 template
       templateParams,
-      'YOUR_PUBLIC_KEY' // Remplacez par votre Public Key
+      'KeyRo8JahlKtBGVd_OI4'
     );
 
     return response;
