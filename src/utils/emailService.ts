@@ -1,6 +1,8 @@
-import { supabase } from "@/integrations/supabase/client";
+import emailjs from '@emailjs/browser';
 
-const FRONTEND_URL = "https://evenement-registration.exias.app";
+const EMAILJS_SERVICE_ID = "service_7yvzwzp";
+const EMAILJS_TEMPLATE_ID = "template_8aqw0xj";
+const EMAILJS_PUBLIC_KEY = "user_K2fXVvZxDPdEV6oDqF9Xt";
 
 export const sendUserConfirmationEmail = async (data: {
   firstName: string;
@@ -8,20 +10,24 @@ export const sendUserConfirmationEmail = async (data: {
   email: string;
   id: string;
 }) => {
-  const verificationUrl = `${FRONTEND_URL}/verify-registration?id=${data.id}`;
-  const qrCodeUrl = `${FRONTEND_URL}/verify-info?id=${data.id}`;
+  const templateParams = {
+    to_name: `${data.firstName} ${data.lastName}`,
+    to_email: data.email,
+    verification_url: `${window.location.origin}/verify-registration?id=${data.id}`,
+    qr_code_url: `${window.location.origin}/verify-info?id=${data.id}`,
+  };
 
-  const { error } = await supabase.functions.invoke('send-confirmation-email', {
-    body: {
-      to: data.email,
-      firstName: data.firstName,
-      lastName: data.lastName,
-      verificationUrl,
-      qrCodeUrl
-    }
-  });
-
-  if (error) throw error;
+  try {
+    await emailjs.send(
+      EMAILJS_SERVICE_ID,
+      EMAILJS_TEMPLATE_ID,
+      templateParams,
+      EMAILJS_PUBLIC_KEY
+    );
+  } catch (error) {
+    console.error("Error sending confirmation email:", error);
+    throw error;
+  }
 };
 
 export const sendOrganizerNotificationEmail = async (data: {
@@ -31,15 +37,22 @@ export const sendOrganizerNotificationEmail = async (data: {
   phone: string;
   status: string;
 }) => {
-  const { error } = await supabase.functions.invoke('send-organizer-notification', {
-    body: {
-      firstName: data.firstName,
-      lastName: data.lastName,
-      email: data.email,
-      phone: data.phone,
-      status: data.status
-    }
-  });
+  const templateParams = {
+    participant_name: `${data.firstName} ${data.lastName}`,
+    participant_email: data.email,
+    participant_phone: data.phone,
+    participant_status: data.status,
+  };
 
-  if (error) throw error;
+  try {
+    await emailjs.send(
+      EMAILJS_SERVICE_ID,
+      EMAILJS_TEMPLATE_ID,
+      templateParams,
+      EMAILJS_PUBLIC_KEY
+    );
+  } catch (error) {
+    console.error("Error sending organizer notification:", error);
+    throw error;
+  }
 };
