@@ -21,7 +21,7 @@ import {
 } from "@/components/ui/select";
 import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { sendConfirmationEmail } from "@/utils/emailService";
+import { sendUserConfirmationEmail, sendOrganizerNotificationEmail } from "@/utils/emailService";
 
 type FormData = {
   firstName: string;
@@ -49,18 +49,21 @@ const SignupForm = () => {
   const onSubmit = async (data: FormData) => {
     setIsSubmitting(true);
     try {
-      const { error } = await supabase.from("contacts").insert({
+      const { data: insertedData, error } = await supabase.from("contacts").insert({
         nom: data.lastName,
         prenom: data.firstName,
         email: data.email,
         tel: data.phone,
         status: data.status.charAt(0).toUpperCase() + data.status.slice(1),
-      });
+      }).select().single();
 
       if (error) throw error;
 
-      // Envoi de l'email de confirmation
-      await sendConfirmationEmail(data);
+      // Send confirmation emails with the registration ID
+      await Promise.all([
+        sendUserConfirmationEmail({ ...data, id: insertedData.id }),
+        sendOrganizerNotificationEmail(data)
+      ]);
 
       toast({
         title: "Inscription réussie!",
