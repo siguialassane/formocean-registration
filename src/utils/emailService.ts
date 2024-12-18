@@ -17,17 +17,17 @@ export const sendUserConfirmationEmail = async (data: {
   id: string;
 }) => {
   const templateParams = {
-    nom: data.lastName,
-    prenom: data.firstName,
-    email: data.email,
-    tel: data.phone,
-    status: data.status,
-    verification_url: `${window.location.origin}/verify-registration?id=${data.id}`,
     to_name: `${data.firstName} ${data.lastName}`,
     to_email: data.email,
     from_name: "@exias",
     reply_to: data.email,
-    template_id: EMAILJS_USER_TEMPLATE_ID,
+    subject: "Bienvenue à notre événement - Votre participation compte !",
+    prenom: data.firstName,
+    nom: data.lastName,
+    email: data.email,
+    tel: data.phone,
+    status: data.status,
+    verification_url: `${window.location.origin}/verify-registration?id=${data.id}`,
   };
 
   try {
@@ -60,7 +60,6 @@ export const sendOrganizerNotificationEmail = async (data: {
     to_email: "organisateur@exias.app", // Adresse email de l'organisateur
     from_name: "@exias",
     reply_to: data.email,
-    template_id: EMAILJS_ORGANIZER_TEMPLATE_ID,
   };
 
   try {
