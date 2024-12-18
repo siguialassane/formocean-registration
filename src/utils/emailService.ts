@@ -18,7 +18,7 @@ export const sendConfirmationEmail = async (data: EmailData) => {
 
     const response = await emailjs.send(
       'service_sxgma2j',
-      'template_2ncsaxe', // Using T1 template
+      'template_2ncsaxe',
       templateParams,
       'KeyRo8JahlKtBGVd_OI4'
     );
