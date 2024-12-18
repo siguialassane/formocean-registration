@@ -1,8 +1,9 @@
 import emailjs from '@emailjs/browser';
 
-const EMAILJS_SERVICE_ID = "service_7yvzwzp";
-const EMAILJS_TEMPLATE_ID = "template_8aqw0xj";
-const EMAILJS_PUBLIC_KEY = "public_K2fXVvZxDPdEV6oDqF9Xt";
+const EMAILJS_SERVICE_ID = "service_sxgma2j";
+const EMAILJS_USER_TEMPLATE_ID = "template_2ncsaxe";
+const EMAILJS_ORGANIZER_TEMPLATE_ID = "template_dp1tu2w";
+const EMAILJS_PUBLIC_KEY = "Ro8JahlKtBGVd_OI4";
 
 // Initialize EmailJS
 emailjs.init(EMAILJS_PUBLIC_KEY);
@@ -21,12 +22,13 @@ export const sendUserConfirmationEmail = async (data: {
   };
 
   try {
-    await emailjs.send(
+    const response = await emailjs.send(
       EMAILJS_SERVICE_ID,
-      EMAILJS_TEMPLATE_ID,
+      EMAILJS_USER_TEMPLATE_ID,
       templateParams,
       EMAILJS_PUBLIC_KEY
     );
+    console.log("Email de confirmation envoyé avec succès:", response);
   } catch (error) {
     console.error("Error sending confirmation email:", error);
     throw error;
@@ -48,12 +50,13 @@ export const sendOrganizerNotificationEmail = async (data: {
   };
 
   try {
-    await emailjs.send(
+    const response = await emailjs.send(
       EMAILJS_SERVICE_ID,
-      EMAILJS_TEMPLATE_ID,
+      EMAILJS_ORGANIZER_TEMPLATE_ID,
       templateParams,
       EMAILJS_PUBLIC_KEY
     );
+    console.log("Email de notification envoyé avec succès:", response);
   } catch (error) {
     console.error("Error sending organizer notification:", error);
     throw error;
