@@ -17,17 +17,17 @@ export const sendUserConfirmationEmail = async (data: {
   const templateParams = {
     to_name: `${data.firstName} ${data.lastName}`,
     to_email: data.email,
-    user_email: data.email, // Ajout de user_email pour s'assurer que le destinataire est défini
+    reply_to: data.email,
     verification_url: `${window.location.origin}/verify-registration?id=${data.id}`,
     qr_code_url: `${window.location.origin}/verify-info?id=${data.id}`,
   };
 
   try {
+    console.log("Sending user confirmation email with params:", templateParams);
     const response = await emailjs.send(
       EMAILJS_SERVICE_ID,
       EMAILJS_USER_TEMPLATE_ID,
-      templateParams,
-      EMAILJS_PUBLIC_KEY
+      templateParams
     );
     console.log("Email de confirmation envoyé avec succès:", response);
   } catch (error) {
@@ -48,16 +48,16 @@ export const sendOrganizerNotificationEmail = async (data: {
     participant_email: data.email,
     participant_phone: data.phone,
     participant_status: data.status,
-    user_email: data.email, // Ajout de user_email pour s'assurer que le destinataire est défini
-    to_email: data.email, // Ajout de to_email pour la cohérence
+    reply_to: data.email,
+    to_email: data.email,
   };
 
   try {
+    console.log("Sending organizer notification email with params:", templateParams);
     const response = await emailjs.send(
       EMAILJS_SERVICE_ID,
       EMAILJS_ORGANIZER_TEMPLATE_ID,
-      templateParams,
-      EMAILJS_PUBLIC_KEY
+      templateParams
     );
     console.log("Email de notification envoyé avec succès:", response);
   } catch (error) {
