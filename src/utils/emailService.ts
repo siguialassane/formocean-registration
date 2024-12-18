@@ -23,7 +23,7 @@ export const sendUserConfirmationEmail = async (data: {
     tel: data.phone,
     status: data.status,
     verification_url: `${window.location.origin}/verify-registration?id=${data.id}`,
-    to_email: data.email,
+    to: data.email, // Changed from to_email to to
     from_name: "@exias",
     reply_to: data.email,
   };
@@ -54,7 +54,7 @@ export const sendOrganizerNotificationEmail = async (data: {
     participant_email: data.email,
     participant_phone: data.phone,
     participant_status: data.status,
-    to_email: data.email,
+    to: data.email, // Changed from to_email to to
     from_name: "@exias",
     reply_to: data.email,
   };
