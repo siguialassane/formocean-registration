@@ -2,7 +2,10 @@ import emailjs from '@emailjs/browser';
 
 const EMAILJS_SERVICE_ID = "service_7yvzwzp";
 const EMAILJS_TEMPLATE_ID = "template_8aqw0xj";
-const EMAILJS_PUBLIC_KEY = "user_K2fXVvZxDPdEV6oDqF9Xt";
+const EMAILJS_PUBLIC_KEY = "public_K2fXVvZxDPdEV6oDqF9Xt";
+
+// Initialize EmailJS
+emailjs.init(EMAILJS_PUBLIC_KEY);
 
 export const sendUserConfirmationEmail = async (data: {
   firstName: string;
