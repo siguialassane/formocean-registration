@@ -57,7 +57,7 @@ export const sendOrganizerNotificationEmail = async (data: {
     participant_phone: data.phone,
     participant_status: data.status,
     to_name: "Organisateur",
-    to_email: "organisateur@exias.app", // Adresse email de l'organisateur
+    to_email: "organisateur@exias.app",
     from_name: "@exias",
     reply_to: data.email,
   };
