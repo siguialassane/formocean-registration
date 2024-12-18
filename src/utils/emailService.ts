@@ -16,7 +16,7 @@ export const sendUserConfirmationEmail = async (data: {
 }) => {
   const templateParams = {
     to_name: `${data.firstName} ${data.lastName}`,
-    to_email: data.email,
+    to: data.email, // Changed from to_email to to
     reply_to: data.email,
     verification_url: `${window.location.origin}/verify-registration?id=${data.id}`,
     qr_code_url: `${window.location.origin}/verify-info?id=${data.id}`,
@@ -27,7 +27,8 @@ export const sendUserConfirmationEmail = async (data: {
     const response = await emailjs.send(
       EMAILJS_SERVICE_ID,
       EMAILJS_USER_TEMPLATE_ID,
-      templateParams
+      templateParams,
+      EMAILJS_PUBLIC_KEY // Added back the public key
     );
     console.log("Email de confirmation envoyé avec succès:", response);
   } catch (error) {
@@ -48,8 +49,8 @@ export const sendOrganizerNotificationEmail = async (data: {
     participant_email: data.email,
     participant_phone: data.phone,
     participant_status: data.status,
+    to: data.email, // Changed from to_email to to
     reply_to: data.email,
-    to_email: data.email,
   };
 
   try {
@@ -57,7 +58,8 @@ export const sendOrganizerNotificationEmail = async (data: {
     const response = await emailjs.send(
       EMAILJS_SERVICE_ID,
       EMAILJS_ORGANIZER_TEMPLATE_ID,
-      templateParams
+      templateParams,
+      EMAILJS_PUBLIC_KEY // Added back the public key
     );
     console.log("Email de notification envoyé avec succès:", response);
   } catch (error) {
