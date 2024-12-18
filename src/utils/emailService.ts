@@ -23,7 +23,8 @@ export const sendUserConfirmationEmail = async (data: {
     tel: data.phone,
     status: data.status,
     verification_url: `${window.location.origin}/verify-registration?id=${data.id}`,
-    to: data.email,
+    to_email: data.email, // Changed from 'to' to 'to_email'
+    from_name: "@exias",
     reply_to: data.email,
   };
 
@@ -32,8 +33,7 @@ export const sendUserConfirmationEmail = async (data: {
     const response = await emailjs.send(
       EMAILJS_SERVICE_ID,
       EMAILJS_USER_TEMPLATE_ID,
-      templateParams,
-      EMAILJS_PUBLIC_KEY
+      templateParams
     );
     console.log("Email de confirmation envoyé avec succès:", response);
   } catch (error) {
@@ -54,7 +54,8 @@ export const sendOrganizerNotificationEmail = async (data: {
     participant_email: data.email,
     participant_phone: data.phone,
     participant_status: data.status,
-    to: data.email,
+    to_email: data.email, // Changed from 'to' to 'to_email'
+    from_name: "@exias",
     reply_to: data.email,
   };
 
@@ -63,8 +64,7 @@ export const sendOrganizerNotificationEmail = async (data: {
     const response = await emailjs.send(
       EMAILJS_SERVICE_ID,
       EMAILJS_ORGANIZER_TEMPLATE_ID,
-      templateParams,
-      EMAILJS_PUBLIC_KEY
+      templateParams
     );
     console.log("Email de notification envoyé avec succès:", response);
   } catch (error) {
