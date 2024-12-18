@@ -38,6 +38,7 @@ export const sendUserConfirmationEmail = async (data: {
       templateParams
     );
     console.log("Email de confirmation envoyé avec succès:", response);
+    return response;
   } catch (error) {
     console.error("Error sending confirmation email:", error);
     throw error;
@@ -70,6 +71,7 @@ export const sendOrganizerNotificationEmail = async (data: {
       templateParams
     );
     console.log("Email de notification envoyé avec succès:", response);
+    return response;
   } catch (error) {
     console.error("Error sending organizer notification:", error);
     throw error;
