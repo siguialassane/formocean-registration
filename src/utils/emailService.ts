@@ -27,6 +27,7 @@ export const sendUserConfirmationEmail = async (data: {
     to_email: data.email,
     from_name: "@exias",
     reply_to: data.email,
+    template_id: EMAILJS_USER_TEMPLATE_ID,
   };
 
   try {
@@ -56,9 +57,10 @@ export const sendOrganizerNotificationEmail = async (data: {
     participant_phone: data.phone,
     participant_status: data.status,
     to_name: "Organisateur",
-    to_email: data.email,
+    to_email: "organisateur@exias.app", // Adresse email de l'organisateur
     from_name: "@exias",
     reply_to: data.email,
+    template_id: EMAILJS_ORGANIZER_TEMPLATE_ID,
   };
 
   try {
