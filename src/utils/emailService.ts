@@ -17,6 +17,7 @@ export const sendUserConfirmationEmail = async (data: {
   const templateParams = {
     to_name: `${data.firstName} ${data.lastName}`,
     to_email: data.email,
+    user_email: data.email, // Ajout de user_email pour s'assurer que le destinataire est défini
     verification_url: `${window.location.origin}/verify-registration?id=${data.id}`,
     qr_code_url: `${window.location.origin}/verify-info?id=${data.id}`,
   };
@@ -47,6 +48,8 @@ export const sendOrganizerNotificationEmail = async (data: {
     participant_email: data.email,
     participant_phone: data.phone,
     participant_status: data.status,
+    user_email: data.email, // Ajout de user_email pour s'assurer que le destinataire est défini
+    to_email: data.email, // Ajout de to_email pour la cohérence
   };
 
   try {
